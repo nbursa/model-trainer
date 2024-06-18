@@ -12,31 +12,43 @@
       </div>
       <div class="mb-4">
         <label for="features" class="block text-sm font-medium text-gray-700">Features</label>
-        <input type="text" id="features" v-model="features" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        <input type="text" id="features" v-model="features" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., x" />
       </div>
       <div class="mb-4">
         <label for="target" class="block text-sm font-medium text-gray-700">Target</label>
-        <input type="text" id="target" v-model="target" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        <input type="text" id="target" v-model="target" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., y" />
       </div>
       <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Train Model</button>
     </form>
     <div v-if="score !== null" class="mt-4">
       <h2 class="text-xl font-bold">Model Score: {{ score }}</h2>
     </div>
+    <chart-component v-if="modelData.length > 0" :data="modelData" class="mt-4"></chart-component>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import axios from "axios";
+import ChartComponent from "../components/ChartComponent.vue";
+
+interface ModelData {
+  x: number;
+  y: number;
+  predicted: number;
+}
 
 export default defineComponent({
   name: "Home",
+  components: {
+    ChartComponent,
+  },
   setup() {
     const features = ref("");
     const target = ref("");
     const score = ref<number | null>(null);
     const dataset = ref<File | null>(null);
+    const modelData = ref<ModelData[]>([]);
 
     const handleFileUpload = (event: Event) => {
       const input = event.target as HTMLInputElement;
@@ -54,7 +66,7 @@ export default defineComponent({
 
         try {
           const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/models/train`,
+            `/api/models/train`,
             formData,
             {
               headers: {
@@ -63,6 +75,11 @@ export default defineComponent({
             }
           );
           score.value = response.data.score;
+          modelData.value = response.data.data.map((row: any) => ({
+            x: row[features.value],
+            y: row[target.value],
+            predicted: row.predicted,
+          }));
         } catch (error) {
           console.error("Error:", error);
         }
@@ -74,6 +91,7 @@ export default defineComponent({
       target,
       score,
       dataset,
+      modelData,
       handleFileUpload,
       trainModel,
     };
