@@ -1,10 +1,9 @@
+from io import StringIO
 from flask import Blueprint, request, jsonify
 from sklearn.linear_model import LinearRegression
 import pandas as pd
-from io import StringIO
 
 model_bp = Blueprint('model_bp', __name__)
-
 
 @model_bp.route('/train', methods=['POST'])
 def train_model():
@@ -19,6 +18,11 @@ def train_model():
     # Read the file contents into a pandas DataFrame
     file_content = file.read().decode('utf-8')
     df = pd.read_csv(StringIO(file_content))
+
+    # Check if specified features and target exist in the dataset
+    missing_columns = [col for col in features + [target] if col not in df.columns]
+    if missing_columns:
+        return jsonify({'error': f"Columns {missing_columns} not found in the dataset"}), 400
 
     X = df[features]
     y = df[target]

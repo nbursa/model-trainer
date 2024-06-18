@@ -109,6 +109,7 @@ button:focus-visible {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  overflow-y: auto;
 }
 
 @media (prefers-color-scheme: light) {
