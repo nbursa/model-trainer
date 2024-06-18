@@ -1,22 +1,24 @@
 <template>
-  <div class="max-w-2xl mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6 text-center">Model Builder</h1>
+  <div class="max-w-2xl mx-auto p-4 pb-24 font-light">
+    <h1 class="text-4xl font-bold mb-6 py-6 text-center">Model Builder</h1>
     <form @submit.prevent="trainModel" class="space-y-6">
-      <div class="text-sm text-gray-400 mb-4">
-        <p class="mb-2">Follow these steps to train your model:</p>
-        <ol class="list-decimal list-inside">
-          <li>Select a dataset file (CSV format).</li>
-          <li>Enter the feature columns (comma-separated).</li>
-          <li>Enter the target column.</li>
-          <li>Click "Train Model" to train the model.</li>
-        </ol>
+      <div class="flex flex-col items-center justify-center text-sm">
+        <div class="text-gray-400 mb-4">
+          <p class="mb-2">Follow these steps to train your model:</p>
+          <ol class="list-decimal list-inside">
+            <li>Select a dataset file (CSV format).</li>
+            <li>Enter the feature columns (comma-separated).</li>
+            <li>Enter the target column.</li>
+            <li>Click "Train Model" to train the model.</li>
+          </ol>
+        </div>
       </div>
       <div>
         <label for="dataset" class="block text-sm font-medium text-gray-400 mb-2">Dataset</label>
-        <div class="relative w-full h-16 border border-gray-900 rounded-md flex items-center justify-center px-3 py-2 bg-blue-500 hover:bg-blue-600 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+        <div class="relative w-full h-16 border border-gray-900 rounded-md flex items-center justify-center px-3 py-2 bg-blue-500 hover:bg-blue-600 shadow-sm focus:outline-none active:text-yellow-100 text-sm">
           <input type="file" id="dataset" @change="handleFileUpload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
           <span v-if="!dataset" class="text-white">Click to select a file</span>
-          <span v-else class="text-gray-700">{{ dataset.name }}</span>
+          <span v-else class="text-yellow-50">{{ dataset.name }}</span>
         </div>
       </div>
       <div>
@@ -25,7 +27,7 @@
           type="text"
           id="features"
           v-model="features"
-          class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none sm:text-sm"
           placeholder="e.g., x1, x2, x3"
         />
       </div>
@@ -35,13 +37,13 @@
           type="text"
           id="target"
           v-model="target"
-          class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none sm:text-sm"
           placeholder="e.g., y"
         />
       </div>
       <button
         type="submit"
-        class="w-full bg-blue-500 text-white text-sm px-4 py-2 rounded-md shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        class="w-full bg-blue-500 text-white font-light text-sm px-4 py-2 rounded-md shadow hover:bg-blue-600 focus:outline-none"
         :disabled="loading"
       >
         <span v-if="!loading">Train Model</span>
@@ -54,7 +56,7 @@
     </div>
     <div v-if="modelData.length > 0" class="mt-6">
       <label for="xFeature" class="block text-sm font-medium text-gray-400 mb-2">Select x-axis feature</label>
-      <select v-model="xFeature" id="xFeature" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      <select v-model="xFeature" id="xFeature" class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none sm:text-sm">
         <option v-for="feature in featureList" :key="feature" :value="feature">{{ feature }}</option>
       </select>
       <chart-component :data="modelData" :xFeature="xFeature" class="mt-4"></chart-component>
