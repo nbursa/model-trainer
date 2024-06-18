@@ -48,16 +48,15 @@ Model Trainer is a web application that helps users create, train, and evaluate 
 2. **Set up the backend:**
 
     ```bash
-    cd backend
-    python3 -m venv venv
-    source venv/bin/activate
+    python3 -m venv .venv
+    source .venv/bin/activate
     pip install -r requirements.txt
     ```
 
 3. **Set up the frontend:**
 
     ```bash
-    cd ../frontend
+    cd client
     npm install
     ```
 
@@ -66,20 +65,19 @@ Model Trainer is a web application that helps users create, train, and evaluate 
 1. **Start the backend server:**
 
     ```bash
-    cd backend
-    source venv/bin/activate
+    source .venv/bin/activate
     python run.py
     ```
 
 2. **Start the frontend development server:**
 
     ```bash
-    cd ../frontend
+    cd client
     npm run dev
     ```
 
 3. **Open your browser and navigate to:**
 
     ```
-    http://localhost:3000
+    http://localhost:5173
     ```
