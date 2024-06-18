@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from sklearn.linear_model import LinearRegression
 import pandas as pd
+from io import StringIO
 
 model_bp = Blueprint('model_bp', __name__)
 
@@ -15,12 +16,18 @@ def train_model():
     features = data['features'].split(',')
     target = data['target']
 
-    df = pd.read_csv(file)
+    # Read the file contents into a pandas DataFrame
+    file_content = file.read().decode('utf-8')
+    df = pd.read_csv(StringIO(file_content))
+
     X = df[features]
     y = df[target]
 
     model = LinearRegression()
     model.fit(X, y)
 
+    df['predicted'] = model.predict(X)
     score = model.score(X, y)
-    return jsonify({'score': score})
+    response_data = df.to_dict(orient='records')
+
+    return jsonify({'score': score, 'data': response_data})
