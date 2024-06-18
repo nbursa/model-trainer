@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   root: true,
   env: {
     node: true,
@@ -15,9 +15,9 @@ export default {
     'prettier',
   ],
   rules: {
-    // Add your custom rules here
     'vue/no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
   },
 }
