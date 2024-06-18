@@ -1,6 +1,9 @@
 # Model Trainer
 
+
 Model Trainer is a web application that helps users create, train, and evaluate machine learning models with an easy-to-use interface. The application is built with a Vue.js frontend and a Flask backend.
+
+![Model-Builder.png](client/public/Model-Builder.png)
 
 ## Features
 
