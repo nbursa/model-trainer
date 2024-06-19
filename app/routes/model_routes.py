@@ -5,6 +5,7 @@ import pandas as pd
 
 model_bp = Blueprint('model_bp', __name__)
 
+
 @model_bp.route('/train', methods=['POST'])
 def train_model():
     if 'dataset' not in request.files:

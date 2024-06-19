@@ -115,14 +115,16 @@ export default defineComponent({
           );
           score.value = response.data.score;
           modelData.value = response.data.data.map((row: any) => ({
-            x: row[featureList.value[0]], // Use the first feature for x axis by default
+            x: row[featureList.value[0]],
             y: row[target.value],
             predicted: row.predicted,
           }));
           xFeature.value = featureList.value[0];
-        } catch (err) {
+        } catch (err: any) {
           if (err.response && err.response.data && err.response.data.error) {
             error.value = err.response.data.error;
+          } else if (err.message === "Network Error") {
+            error.value = "Network Error. Please check if the backend server is running.";
           } else {
             error.value = "An unexpected error occurred.";
           }
