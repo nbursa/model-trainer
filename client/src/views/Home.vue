@@ -9,6 +9,8 @@
             <li>Select a dataset file (CSV format).</li>
             <li>Enter the feature columns (comma-separated).</li>
             <li>Enter the target column.</li>
+            <li>Select the model type.</li>
+            <li>Enter polynomial degree (optional).</li>
             <li>Click "Train Model" to train the model.</li>
           </ol>
         </div>
@@ -39,6 +41,27 @@
           v-model="target"
           class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none sm:text-sm"
           placeholder="e.g., y"
+        />
+      </div>
+      <div>
+        <label for="modelType" class="block text-sm font-medium text-gray-400 mb-2">Regression Model</label>
+        <select v-model="modelType" id="modelType" class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none sm:text-sm">
+          <option value="LinearRegression">Linear Regression</option>
+          <option value="Ridge">Ridge Regression</option>
+          <option value="Lasso">Lasso Regression</option>
+          <option value="ElasticNet">ElasticNet</option>
+          <option value="RandomForest">Random Forest</option>
+          <option value="GradientBoosting">Gradient Boosting</option>
+        </select>
+      </div>
+      <div>
+        <label for="polyDegree" class="block text-sm font-medium text-gray-400 mb-2">Polynomial Degree</label>
+        <input
+          type="number"
+          id="polyDegree"
+          v-model="polyDegree"
+          class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none sm:text-sm"
+          placeholder="e.g., 2"
         />
       </div>
       <button
@@ -78,6 +101,8 @@ export default defineComponent({
   setup() {
     const features = ref("");
     const target = ref("");
+    const modelType = ref("LinearRegression");
+    const polyDegree = ref(1);
     const score = ref<number | null>(null);
     const dataset = ref<File | null>(null);
     const modelData = ref<ModelData[]>([]);
@@ -102,6 +127,8 @@ export default defineComponent({
         formData.append("dataset", dataset.value);
         formData.append("features", features.value);
         formData.append("target", target.value);
+        formData.append("model_type", modelType.value);
+        formData.append("poly_degree", polyDegree.value.toString());
 
         try {
           const response = await axios.post(
@@ -137,6 +164,8 @@ export default defineComponent({
     return {
       features,
       target,
+      modelType,
+      polyDegree,
       score,
       dataset,
       modelData,
@@ -150,3 +179,4 @@ export default defineComponent({
   },
 });
 </script>
+
