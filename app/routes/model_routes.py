@@ -4,6 +4,7 @@ from sklearn.linear_model import Ridge, Lasso, ElasticNet, LinearRegression
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import pandas as pd
 import numpy as np
 
@@ -75,8 +76,26 @@ def train_model():
     grid_search.fit(X_train, y_train)
     best_model = grid_search.best_estimator_
 
-    score = best_model.score(X_test, y_test)
+    y_pred = best_model.predict(X_test)
+
+    # Calculate additional metrics
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y_test, y_pred)
+    adjusted_r2 = 1 - (1 - r2) * (len(y) - 1) / (len(y) - X.shape[1] - 1)
+
     df['predicted'] = best_model.predict(X_scaled)
     response_data = df.to_dict(orient='records')
 
-    return jsonify({'score': score, 'data': response_data, 'best_params': grid_search.best_params_})
+    return jsonify({
+        'score': r2,
+        'mae': mae,
+        'mse': mse,
+        'rmse': rmse,
+        'adjusted_r2': adjusted_r2,
+        'coefficients': best_model.coef_.tolist() if hasattr(best_model, 'coef_') else None,
+        'intercept': best_model.intercept_ if hasattr(best_model, 'intercept_') else None,
+        'data': response_data,
+        'best_params': grid_search.best_params_
+    })

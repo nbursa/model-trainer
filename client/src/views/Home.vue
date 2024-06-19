@@ -9,7 +9,7 @@
             <li>Select a dataset file (CSV format).</li>
             <li>Enter the feature columns (comma-separated).</li>
             <li>Enter the target column.</li>
-            <li>Select the model type.</li>
+            <li>Select the regression model.</li>
             <li>Enter polynomial degree (optional).</li>
             <li>Click "Train Model" to train the model.</li>
           </ol>
@@ -74,13 +74,26 @@
       </button>
     </form>
     <div v-if="error" class="mt-4 text-red-600 text-center">{{ error }}</div>
-    <div v-if="score !== null" class="mt-6 text-center">
-      <h2 class="text-xl font-bold">Model Score: {{ score }}</h2>
+    <div v-if="score !== null" class="mt-6">
+      <h2 class="text-xl font-bold text-center mb-4">Model Metrics</h2>
+      <div class="flex flex-col sm:flex-row items-start justify-center text-sm">
+        <div class="w-1/2 mr-24">
+          <p class=""><span>R² Score:</span> <span class="text-md font-semibold ml-2">{{ score }}</span></p>
+          <p class=""><span>Adjusted R²:</span> <span class="text-md font-semibold ml-2">{{ adjustedR2 }}</span></p>
+          <p class=""><span>MAE:</span> <span class="text-md font-semibold ml-2">{{ mae }}</span></p>
+          <p class=""><span>MSE:</span> <span class="text-md font-semibold ml-2">{{ mse }}</span></p>
+        </div>
+        <div class="w-1/2">
+          <p class=""><span>RMSE:</span>  <span class="text-md font-semibold ml-2">{{ rmse }}</span></p>
+          <p class="" v-if="coefficients"><span>Coefficients:</span> <span class="text-md font-semibold ml-2">{{ coefficients }}</span></p>
+          <p class="" v-if="intercept !== null"><span>Intercept:</span> <span class="text-md font-semibold ml-2">{{ intercept }}</span></p>
+        </div>
+      </div>
     </div>
     <div v-if="modelData.length > 0" class="mt-6">
       <label for="xFeature" class="block text-sm font-medium text-gray-400 mb-2">Select x-axis feature</label>
       <select v-model="xFeature" id="xFeature" class="block w-full px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none sm:text-sm">
-        <option v-for="feature in featureList" :key="feature" :value="feature">{{ feature }}</option>
+        <option v-for="feature in features.split(',')" :key="feature" :value="feature">{{ feature }}</option>
       </select>
       <chart-component :data="modelData" :xFeature="xFeature" class="mt-4"></chart-component>
     </div>
@@ -104,6 +117,12 @@ export default defineComponent({
     const modelType = ref("LinearRegression");
     const polyDegree = ref(1);
     const score = ref<number | null>(null);
+    const adjustedR2 = ref<number | null>(null);
+    const mae = ref<number | null>(null);
+    const mse = ref<number | null>(null);
+    const rmse = ref<number | null>(null);
+    const coefficients = ref<number[] | null>(null);
+    const intercept = ref<number | null>(null);
     const dataset = ref<File | null>(null);
     const modelData = ref<ModelData[]>([]);
     const loading = ref(false);
@@ -141,6 +160,12 @@ export default defineComponent({
             }
           );
           score.value = response.data.score;
+          adjustedR2.value = response.data.adjusted_r2;
+          mae.value = response.data.mae;
+          mse.value = response.data.mse;
+          rmse.value = response.data.rmse;
+          coefficients.value = response.data.coefficients;
+          intercept.value = response.data.intercept;
           modelData.value = response.data.data.map((row: any) => ({
             x: row[featureList.value[0]],
             y: row[target.value],
@@ -167,6 +192,12 @@ export default defineComponent({
       modelType,
       polyDegree,
       score,
+      adjustedR2,
+      mae,
+      mse,
+      rmse,
+      coefficients,
+      intercept,
       dataset,
       modelData,
       loading,
@@ -179,4 +210,3 @@ export default defineComponent({
   },
 });
 </script>
-
