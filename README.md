@@ -1,6 +1,5 @@
 # Model Trainer
 
-
 Model Trainer is a web application that helps users create, train, and evaluate machine learning models with an easy-to-use interface.
 
 ![Model-Builder.png](client/public/Model-Trainer.png)
