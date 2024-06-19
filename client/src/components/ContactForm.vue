@@ -27,6 +27,10 @@
           Submit
         </button>
       </div>
+
+      <div v-if="responseMessage" class="mt-4 p-4 text-sm text-center">
+        {{ responseMessage }}
+      </div>
     </form>
   </div>
 </template>
@@ -43,6 +47,7 @@ export default defineComponent({
       email: '',
       message: ''
     });
+    const responseMessage = ref('');
 
     const formValid = computed(() => {
       return form.value.name && form.value.email && form.value.message;
@@ -57,19 +62,23 @@ export default defineComponent({
             'Content-Type': 'application/json',
           }
         });
-        console.log(response.data); // Handle response data as needed
+        responseMessage.value = response.data.message
         form.value.name = '';
         form.value.email = '';
         form.value.message = '';
+        setTimeout(() => {
+          responseMessage.value = '';
+        }, 5000);
       } catch (error) {
-        console.error('Error:', error);
+        responseMessage.value = `An error occurred while sending the email: ${error}`;
       }
     };
 
     return {
       form,
       formValid,
-      submitForm
+      submitForm,
+      responseMessage
     };
   }
 });
