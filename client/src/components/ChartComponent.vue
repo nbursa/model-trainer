@@ -1,11 +1,13 @@
 <template>
   <div>
-    <select v-model="selectedChartType" class="mb-4 px-3 py-2 border border-gray-900 rounded-md shadow-sm focus:outline-none sm:text-sm">
+    <select v-model="selectedChartType" class="mb-4 px-3 py-2 border border-gray-900 bg-gray-950 rounded-md shadow-sm focus:outline-none sm:text-sm">
       <option value="line">Line Chart</option>
       <option value="bar">Bar Chart</option>
       <option value="scatter">Scatter Plot</option>
     </select>
-    <component :is="chartComponent" :data="chartData" :options="chartOptions"></component>
+    <div class="chart-container">
+      <component :is="chartComponent" :data="chartData" :options="chartOptions"></component>
+    </div>
   </div>
 </template>
 
@@ -46,7 +48,7 @@ export default defineComponent({
     const selectedChartType = ref<'line' | 'bar' | 'scatter'>('line');
 
     const chartData = ref<ChartData<'line' | 'bar' | 'scatter', (number | Point | null)[], unknown>>({
-      labels: props.data.map((d) => d.x.toString()),
+      labels: props.data.map((d) => d.x.toFixed(1)),  // Rounding to 1 decimal place
       datasets: [
         {
           label: "Actual",
@@ -65,6 +67,10 @@ export default defineComponent({
       ],
     });
 
+    const getFontSize = () => {
+      return window.innerWidth < 640 ? 10 : 14;
+    };
+
     const chartOptions = ref<ChartOptions<'line' | 'bar' | 'scatter'>>({
       responsive: true,
       plugins: {
@@ -74,6 +80,34 @@ export default defineComponent({
         title: {
           display: true,
           text: `Predicted vs Actual Values (${props.xFeature})`,
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            font: {
+              size: getFontSize(),
+            },
+            callback: function(value: string | number) {
+              if (typeof value === 'number') {
+                return value.toFixed(1);
+              }
+              return value;
+            },
+          },
+        },
+        y: {
+          ticks: {
+            font: {
+              size: getFontSize(),
+            },
+            callback: function(value: string | number) {
+              if (typeof value === 'number') {
+                return value.toFixed(1);
+              }
+              return value;
+            },
+          },
         },
       },
     });
@@ -89,7 +123,7 @@ export default defineComponent({
         chartComponent.value = Scatter;
       }
 
-      const labels = props.data.map((d) => d.x.toString());
+      const labels = props.data.map((d) => d.x.toFixed(1));  // Rounding to 1 decimal place
       const actualData = props.data.map((d) => d.y);
       const predictedData = props.data.map((d) => d.predicted);
 
@@ -154,6 +188,9 @@ export default defineComponent({
           ],
         } as ChartData<'scatter', (number | Point | null)[], unknown>;
       }
+
+      chartOptions.value.scales!.x!.ticks!.font!.size = getFontSize();
+      chartOptions.value.scales!.y!.ticks!.font!.size = getFontSize();
     });
 
     return {

@@ -9,8 +9,12 @@ def create_app():
     # Enable CORS for the specific origin
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+    # Register blueprints
     from .routes.model_routes import model_bp
+    from .routes.email_routes import email_bp
+
     app.register_blueprint(model_bp, url_prefix='/api/models')
+    app.register_blueprint(email_bp, url_prefix='/api/email')
 
     @app.route('/favicon.ico')
     def favicon():

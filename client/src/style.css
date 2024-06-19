@@ -17,110 +17,77 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
-html,
-body {
-  height: 100%;
+/* Remove default margin */
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, figure, blockquote, fieldset, legend, textarea, pre {
+  margin: 0;
 }
 
-a,
-button {
-  color: inherit;
+/* Remove default padding */
+h1, h2, h3, h4, h5, h6, ul, ol, dl, figure, blockquote, fieldset, button {
+  padding: 0;
+}
+
+/* Remove list styles on ul, ol elements */
+ul, ol {
+  list-style: none;
+}
+
+/* Set core root defaults */
+html {
+  scroll-behavior: smooth;
+  line-height: 1.5;
+}
+
+/* Remove the link underline */
+a {
   text-decoration: none;
 }
 
-a:focus,
-a:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-a:active,
-button:active {
-  opacity: 0.75;
-}
-
-a:visited {
-  color: #a7a7ff;
-}
-
-a:active {
-  color: #646cff;
-}
-
-a:visited:active {
-  color: #535bf2;
-}
-
-a:visited:hover {
-  color: #747bff;
-}
-
-a:visited:active:hover {
-  color: #646cff;
-}
-
-a:visited:focus,
-a:visited:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-body {
+/* Remove the text and it */
+button, input, optgroup, select, textarea {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-size: inherit;
+  line-height: inherit;
 }
 
-.card {
-  padding: 2em;
+/* Reset form elements to native styles */
+button, input, select, textarea {
+  background-color: transparent;
+  border-style: none;
+  color: inherit;
 }
 
-#app {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  overflow-y: auto;
+/* Ensure a more consistent rendering in all browsers */
+article, aside, dialog, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Remove default styles for form elements */
+button, input {
+  overflow: visible;
 }
+
+/* Define consistent border sizing */
+button, input, select, textarea {
+  border-radius: 0;
+  border-width: 0;
+}
+
+/* Define consistent background and text colors */
+button, input, select, textarea {
+  background-color: transparent;
+  color: inherit;
+}
+
+/* Opt-out of global style settings */
+html {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font: 16px sans-serif;
+}
+
