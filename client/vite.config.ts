@@ -1,12 +1,15 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export default defineConfig({
   plugins: [vue()],
   server: {
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:5000',
+        target: process.env.VITE_API_URL,
         changeOrigin: true,
         secure: false,
       },
