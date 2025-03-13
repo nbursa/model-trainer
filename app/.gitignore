@@ -20,3 +20,11 @@ instance/
 .pytest_cache/
 .pybuilder/
 .dmypy.json
+
+#OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+$Recycle.Bin/
