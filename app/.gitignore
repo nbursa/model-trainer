@@ -1,0 +1,22 @@
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment files
+.env
+instance/
+!instance/.gitignore
+
+# Logs and caches
+*.log
+.webassets-cache
+.mypy_cache/
+.pytest_cache/
+.pybuilder/
+.dmypy.json
