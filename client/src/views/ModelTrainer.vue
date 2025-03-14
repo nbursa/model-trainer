@@ -6,7 +6,7 @@
         <p class="mb-2">Follow these steps to train your model:</p>
         <ol class="list-decimal list-inside">
           <li>Select a dataset file (CSV format).</li>
-          <li>Enter the feature columns (comma-separated).</li>
+          <li>Select feature columns from the list.</li>
           <li>Enter the target column.</li>
           <li>Select the regression model.</li>
           <li>Enter polynomial degree (optional).</li>
@@ -44,42 +44,44 @@
         </div>
       </div>
 
-      <!-- Features List -->
+      <!-- Features Selection (Checkbox) -->
       <div v-if="featuresList.length" class="mt-4">
-        <h3 class="text-md font-medium text-gray-400 mb-2">Features:</h3>
-        <ul class="list-disc list-inside text-gray-200">
-          <li v-for="feature in featuresList" :key="feature">{{ feature }}</li>
-        </ul>
-      </div>
-
-      <!-- Feature Selection -->
-      <div>
-        <label
-          for="features"
-          class="block text-sm font-medium text-gray-400 mb-2"
-          >Features</label
-        >
-        <input
-          v-model="features"
-          type="text"
-          id="features"
-          placeholder="e.g., x1, x2, x3"
-          class="block w-full px-3 py-2 border border-gray-900 bg-gray-950 rounded-md shadow-sm sm:text-sm"
-        />
+        <h3 class="text-md font-medium text-gray-400 mb-2">Select Features:</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <label
+            v-for="feature in featuresList"
+            :key="feature"
+            class="flex items-center space-x-2 text-gray-300"
+          >
+            <input
+              type="checkbox"
+              v-model="selectedFeatures"
+              :value="feature"
+              class="form-checkbox text-blue-500"
+            />
+            <span>{{ feature }}</span>
+          </label>
+        </div>
       </div>
 
       <!-- Target Selection -->
       <div>
         <label for="target" class="block text-sm font-medium text-gray-400 mb-2"
-          >Target</label
+          >Target Column</label
         >
-        <input
+        <select
           v-model="target"
-          type="text"
           id="target"
-          placeholder="e.g., y"
-          class="block w-full px-3 py-2 border border-gray-900 bg-gray-950 rounded-md shadow-sm sm:text-sm"
-        />
+          class="block w-full px-3 py-2 border border-gray-900 bg-gray-950 rounded-md shadow-sm"
+        >
+          <option
+            v-for="feature in featuresList"
+            :key="feature"
+            :value="feature"
+          >
+            {{ feature }}
+          </option>
+        </select>
       </div>
 
       <!-- Regression Model -->
@@ -114,6 +116,7 @@
           v-model="polyDegree"
           type="number"
           id="polyDegree"
+          min="1"
           placeholder="e.g., 2"
           class="block w-full px-3 py-2 border border-gray-900 bg-gray-950 rounded-md shadow-sm sm:text-sm"
         />
@@ -122,11 +125,23 @@
       <!-- Train Button -->
       <button
         type="submit"
-        class="w-full bg-blue-500 text-white font-light text-sm px-4 py-2 rounded-md shadow hover:bg-blue-600"
+        class="w-full bg-blue-500 text-white font-light text-sm px-4 py-2 rounded-md shadow hover:bg-blue-600 flex justify-center items-center"
         :disabled="loading"
       >
         <span v-if="!loading">Train Model</span>
-        <span v-else>Loading...</span>
+        <span v-else class="flex items-center">
+          <svg class="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              fill="none"
+              stroke="white"
+              stroke-width="4"
+            />
+          </svg>
+          Training...
+        </span>
       </button>
     </form>
 
@@ -155,24 +170,24 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 export default defineComponent({
   name: 'ModelTrainer',
   setup() {
-    const features = ref('')
+    const dataset = ref<File | null>(null)
+    const featuresList = ref<string[]>([])
+    const selectedFeatures = ref<string[]>([])
     const target = ref('')
     const modelType = ref('LinearRegression')
     const polyDegree = ref(1)
+    const loading = ref(false)
+    const error = ref<string | null>(null)
     const score = ref<number | null>(null)
     const adjustedR2 = ref<number | null>(null)
     const mae = ref<number | null>(null)
     const mse = ref<number | null>(null)
     const rmse = ref<number | null>(null)
-    const dataset = ref<File | null>(null)
-    const loading = ref(false)
-    const error = ref<string | null>(null)
-    const featuresList = ref<string[]>([])
 
     const handleFileUpload = (event: Event) => {
       const input = event.target as HTMLInputElement
@@ -180,59 +195,69 @@ export default defineComponent({
     }
 
     const showFeatures = async () => {
-      if (dataset.value) {
-        const formData = new FormData()
-        formData.append('dataset', dataset.value)
-        try {
-          const response = await axios.post(
-            '/api/models/show_features',
-            formData
-          )
-          featuresList.value = response.data.features
-        } catch (err) {
-          error.value = 'Failed to load features'
-        }
+      if (!dataset.value) return
+      const formData = new FormData()
+      formData.append('dataset', dataset.value)
+      try {
+        const response = await axios.post('/api/models/show_features', formData)
+        featuresList.value = response.data.features
+      } catch (err) {
+        const axiosError = err as AxiosError<{ error: string }>
+        error.value =
+          axiosError.response?.data?.error || 'Failed to load features'
       }
     }
 
     const trainModel = async () => {
-      if (!dataset.value) return
+      if (
+        !dataset.value ||
+        selectedFeatures.value.length === 0 ||
+        !target.value
+      ) {
+        error.value =
+          'Please upload a dataset, select features, and choose a target column.'
+        return
+      }
+
       loading.value = true
       const formData = new FormData()
       formData.append('dataset', dataset.value)
-      formData.append('features', features.value)
+      formData.append('features', selectedFeatures.value.join(','))
       formData.append('target', target.value)
       formData.append('model_type', modelType.value)
       formData.append('poly_degree', polyDegree.value.toString())
 
       try {
         const response = await axios.post('/api/models/train', formData)
-        score.value = response.data.score
-        adjustedR2.value = response.data.adjusted_r2
-        mae.value = response.data.mae
-        mse.value = response.data.mse
-        rmse.value = response.data.rmse
+        ;({
+          score: score.value,
+          adjusted_r2: adjustedR2.value,
+          mae: mae.value,
+          mse: mse.value,
+          rmse: rmse.value,
+        } = response.data)
       } catch (err) {
-        error.value = 'Error training model'
+        const axiosError = err as AxiosError<{ error: string }>
+        error.value = axiosError.response?.data?.error || 'Error training model'
       } finally {
         loading.value = false
       }
     }
 
     return {
-      features,
+      dataset,
+      featuresList,
+      selectedFeatures,
       target,
       modelType,
       polyDegree,
+      loading,
+      error,
       score,
       adjustedR2,
       mae,
       mse,
       rmse,
-      dataset,
-      loading,
-      error,
-      featuresList,
       handleFileUpload,
       showFeatures,
       trainModel,
