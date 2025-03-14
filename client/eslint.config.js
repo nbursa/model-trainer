@@ -1,11 +1,25 @@
-import globals from 'globals'
-import pluginJs from '@eslint/js'
-import tseslint from 'typescript-eslint'
+import tseslintPlugin from '@typescript-eslint/eslint-plugin'
+import tseslintParser from '@typescript-eslint/parser'
 import pluginVue from 'eslint-plugin-vue'
 
 export default [
-  { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      parser: tseslintParser,
+      sourceType: 'module',
+      ecmaVersion: 2020,
+    },
+  },
+  tseslintPlugin.configs.recommended,
   ...pluginVue.configs['flat/essential'],
+  {
+    name: 'custom-rules',
+    rules: {
+      'vue/multi-word-component-names': 'off',
+      'vue/no-multiple-template-root': 'off',
+      'vue/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error'],
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+    },
+  },
 ]

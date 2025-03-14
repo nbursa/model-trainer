@@ -1,5 +1,5 @@
 <template>
-  <nav class="px-4 py-2 bg-[#242424] drop-shadow-xl">
+  <nav class="px-4 py-2 bg-[#242424] drop-shadow-xl z-40">
     <div class="mx-auto flex justify-between items-center">
       <div>
         <router-link to="/" class="text-xl font-bold">ML Model Trainer</router-link>
@@ -21,10 +21,10 @@
       </div>
     </div>
     <div class="md:hidden h-screen w-screen flex items-center justify-center z-40" v-show="isOpen">
-      <div class="flex flex-col justify-start items-start">
-        <router-link to="/" class="block text-white p-2">Home</router-link>
-        <router-link to="/train" class="block text-white p-2">Train</router-link>
-        <router-link to="/contact" class="block text-white p-2">Contact</router-link>
+      <div class="flex flex-col justify-start items-start font-extrabold text-xl transform -translate-y-1/2"  @click="isOpen = !isOpen">
+        <router-link to="/" class="block text-white py-2 px-16 mb-2">Home</router-link>
+        <router-link to="/train" class="block text-white py-2 px-16 mb-2">Train</router-link>
+        <router-link to="/contact" class="block text-white py-2 px-16 mb-2">Contact</router-link>
       </div>
     </div>
   </nav>

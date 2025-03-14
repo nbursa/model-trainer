@@ -1,12 +1,11 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 import os
-
 
 def create_app():
     app = Flask(__name__)
 
-    # Enable CORS for the specific origin
+    # Enable CORS for API
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # Register blueprints

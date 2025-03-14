@@ -1,85 +1,134 @@
 # Model Trainer
 
-Model Trainer is a web application that helps users create, train, and evaluate machine learning models with an easy-to-use interface.
+## 📌 Overview
 
-![Model-Builder.png](client/public/Model-Trainer.png)
+Model Trainer is a **web-based application** that allows users to **create, train, and evaluate machine learning models** via a user-friendly interface. It is designed for **educational purposes**, making it easy for students, researchers, and developers to experiment with machine learning workflows.
 
-## Features
+## 🛠 Tech Stack
 
-- User authentication and project management
-- Dataset upload and preprocessing tools
-- Selection and configuration of ML models
-- Model training and evaluation
-- Visualization of model performance
-- Export of trained models
+### **Backend (`app/`)**
 
-## Technologies
+- **Python** (Flask)
+- **Flask-SocketIO** (WebSockets for real-time communication)
+- **SQLAlchemy** (Database ORM, if needed)
+- **Celery + Redis** (Optional: for background task processing)
 
-### Frontend
+### **Frontend (`client/`)**
 
-- Vue.js with TypeScript
-- Tailwind CSS
-- Vue Router
-- Pinia for state management
-- Axios for HTTP requests
+- **Vue.js** (Modern frontend framework)
+- **Socket.IO Client** (Real-time updates)
+- **Axios** (API communication)
 
-### Backend
+---
 
-- Flask
-- Flask-Cors
-- Pandas
-- Scikit-learn
+## 🚀 Installation & Setup
 
-## Getting Started
+### **1️⃣ Clone the Repository**
 
-### Prerequisites
+```bash
+git clone https://github.com/nbursa/model-trainer.git
+cd model-trainer
+```
 
-- Node.js and npm
-- Python 3.7+
-- Git
+### **2️⃣ Backend Setup (`app/`)**
 
-### Installation
+```bash
+cd app
+python -m venv venv  # Create virtual environment
+source venv/bin/activate  # Activate it (Mac/Linux)
+venv\Scripts\activate  # (Windows)
 
-1. **Clone the repository:**
+pip install -r requirements.txt  # Install dependencies
+```
 
-    ```bash
-    git clone git@github.com:nbursa/model-trainer.git
-    cd model-trainer
-    ```
+### **3️⃣ Frontend Setup (`client/`)**
 
-2. **Set up the backend:**
+```bash
+cd ../client
+npm ci  # Install dependencies
+```
 
-    ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
-    ```
+---
 
-3. **Set up the frontend:**
+## 🏃 Running the Project
 
-    ```bash
-    cd client
-    npm install
-    ```
+### **Run the Flask Backend (`app/`):**
 
-### Running the Application
+```bash
+cd app
+python -m app.run  # Start Flask with Socket.IO support
+```
 
-1. **Start the backend server:**
+The backend will start at: **http://localhost:5000**
 
-    ```bash
-    source .venv/bin/activate
-    python run.py
-    ```
+### **Run the Vue Frontend (`client/`):**
 
-2. **Start the frontend development server:**
+```bash
+cd client
+npm run dev
+```
 
-    ```bash
-    cd client
-    npm run dev
-    ```
+The frontend will start at: **http://localhost:5173** (default Vite port)
 
-3. **Open your browser and navigate to:**
+---
 
-    ```
-    http://localhost:5173
-    ```
+## 🔄 API & WebSocket Usage
+
+### **📌 API: Start Model Training**
+
+Send a `POST` request to **`/train`** to start training a model.
+
+```bash
+curl -X POST http://localhost:5000/train -H "Content-Type: application/json" -d '{"model": "neural_network"}'
+```
+
+_Response:_
+
+```json
+{ "message": "Model training started" }
+```
+
+### **📌 WebSocket: Listen for Training Updates**
+
+**Frontend (Vue.js) example:**
+
+```javascript
+import { io } from "socket.io-client";
+const socket = io("http://localhost:5000");
+
+socket.on("training_progress", (data) => {
+  console.log("Training Update:", data);
+});
+```
+
+**Backend (Flask) example:**
+
+```python
+from flask_socketio import SocketIO
+socketio = SocketIO()
+
+@socketio.on("start_training")
+def handle_training(data):
+    socketio.emit("training_progress", {"status": "50% completed"})
+```
+
+---
+
+## 🚀 Planned Improvements
+
+- ✅ Implement **User Authentication** (JWT-based login system)
+- ✅ Optimize **Real-time Model Training Feedback**
+- ✅ Add **Predefined ML Models** to simplify usage
+- ✅ Improve **Frontend UI** with better visualizations
+
+---
+
+## 📢 Contributing
+
+Pull requests are welcome! If you'd like to contribute, please **open an issue first** to discuss the changes.
+
+---
+
+## 📜 License
+
+MIT License. See [LICENSE](LICENSE) for details.
